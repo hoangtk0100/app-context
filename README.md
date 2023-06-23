@@ -5,11 +5,13 @@ App Context is a library that manages common components such as configurations, 
 It simplifies the implementation of new services by abstracting away the complexities of component configurations,
 allowing developers to focus on building functionality rather than dealing with intricate configuration details.
 
+It was inspired by [go-micro](https://github.com/go-micro/go-micro) and [service-contex](https://github.com/viettranx/service-context)
+
 It provides the following features:
 
 - Logger component using [zerolog](https://github.com/rs/zerolog).
 - Dynamic management of environment variables and flag variables using [viper](https://github.com/spf13/viper) and
-  it's [pflag](github.com/spf13/pflag) package (viper supports multiple configuration file formats and reading from
+  it's [pflag](https://github.com/spf13/pflag) package (viper supports multiple configuration file formats and reading from
   remote config systems (etcd or Consul), and watching changes, ...).
 - Ability to output environment variables and flag variables in `.env` format.
 - Easy integration of additional components as plugins.
