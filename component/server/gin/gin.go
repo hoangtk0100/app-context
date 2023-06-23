@@ -12,6 +12,12 @@ const (
 	defaultMode          = "debug"
 )
 
+type GinServer interface {
+	GetAddress() string
+	GetRouter() *gin.Engine
+	Start()
+}
+
 type config struct {
 	address string
 	mode    string
@@ -60,7 +66,7 @@ func (gs *ginServer) Run(ac appctx.AppContext) error {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	gs.router = gin.New()
+	gs.router = gin.Default()
 	gs.logger.Info("Init Gin server")
 
 	return nil
@@ -79,9 +85,9 @@ func (gs *ginServer) GetRouter() *gin.Engine {
 }
 
 func (gs *ginServer) Start() {
+	gs.logger.Info("Start Gin server")
+
 	if err := gs.router.Run(gs.address); err != nil {
 		gs.logger.Fatal(err, "Cannot start server")
 	}
-
-	gs.logger.Info("Started Gin server")
 }
