@@ -14,7 +14,7 @@ func newAppCtx() appctx.AppContext {
 	)
 }
 
-var outEnvCMD = &cobra.Command{
+var outEnvCmd = &cobra.Command{
 	Use:   "outenv",
 	Short: "Output all environment variables to std",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -36,7 +36,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	rootCmd.AddCommand(outEnvCMD)
+	rootCmd.AddCommand(outEnvCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	DevEnv = "dev"
-	StgEnv = "stg"
-	PrdEnv = "prd"
+	devEnv = "dev"
+	stgEnv = "stg"
+	prdEnv = "prd"
 
 	envFileKey     = "ENV_FILE"
 	defaultEnvFile = ".env"
@@ -44,7 +44,7 @@ type appContext struct {
 	env        string
 	store      map[string]Component
 	components []Component
-	cmd        *AppFlagSet
+	cmd        *appFlagSet
 	logger     Logger
 }
 
@@ -81,7 +81,12 @@ func formatLogPrefix(prefix, name string) string {
 }
 
 func (ac *appContext) initFlags() {
-	pflag.StringVar(&ac.env, "app-env", DevEnv, "Env for service. Ex: dev | stg | prd")
+	pflag.StringVar(
+		&ac.env,
+		"app-env",
+		devEnv,
+		"Env (dev | stg | prd)",
+	)
 
 	for _, c := range ac.components {
 		c.InitFlags()

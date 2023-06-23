@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	defaultPoolSize      = 0 // 0 is unlimited number of socket connections
-	defaultMintIdleConns = 10
+	defaultPoolSize     = 0 // 0 is unlimited number of socket connections
+	defaultMinIdleConns = 10
 )
 
 // <user>:<password>@<host>:<port>/<db_number>
@@ -36,7 +36,7 @@ func NewRedisDB(id, prefix string) *redisDB {
 		redisDBOpt: &redisDBOpt{
 			prefix:       strings.TrimSpace(prefix),
 			poolSize:     defaultPoolSize,
-			minIdleConns: defaultMintIdleConns,
+			minIdleConns: defaultMinIdleConns,
 		},
 	}
 }
@@ -54,7 +54,7 @@ func (r *redisDB) InitFlags() {
 	pflag.StringVar(&r.url,
 		fmt.Sprintf("%surl", prefix),
 		"redis://localhost:6379",
-		"Redis connection-string. Ex: redis:<user>:<password>@<host>:<port>/<db_name>",
+		"Redis connection-string - Ex: redis:<user>:<password>@<host>:<port>/<db_name>",
 	)
 
 	pflag.IntVar(&r.poolSize,
@@ -65,7 +65,7 @@ func (r *redisDB) InitFlags() {
 
 	pflag.IntVar(&r.minIdleConns,
 		fmt.Sprintf("%spool-min-idle", prefix),
-		defaultMintIdleConns,
+		defaultMinIdleConns,
 		"Redis min idle connections",
 	)
 }
