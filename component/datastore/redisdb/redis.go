@@ -108,3 +108,7 @@ func (r *redisDB) Run(ac appctx.AppContext) error {
 func (r *redisDB) Stop() error {
 	return nil
 }
+
+func (r *redisDB) GetDB() *redis.Client {
+	return r.client
+}

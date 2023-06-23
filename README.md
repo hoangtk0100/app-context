@@ -5,7 +5,7 @@ App Context is a library that manages common components such as configurations, 
 It simplifies the implementation of new services by abstracting away the complexities of component configurations,
 allowing developers to focus on building functionality rather than dealing with intricate configuration details.
 
-It was inspired by [go-micro](https://github.com/go-micro/go-micro) and [service-contex](https://github.com/viettranx/service-context)
+It was inspired by [go-micro](https://github.com/go-micro/go-micro) and [service-context](https://github.com/viettranx/service-context)
 
 It provides the following features:
 
