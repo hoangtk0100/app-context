@@ -11,13 +11,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-type AppFlagSet struct {
+type appFlagSet struct {
 	prefix  string
 	flagSet *pflag.FlagSet
 }
 
-func newAppFlagSet(prefix string, name string, fs *pflag.FlagSet) *AppFlagSet {
-	afs := &AppFlagSet{
+func newAppFlagSet(prefix string, name string, fs *pflag.FlagSet) *appFlagSet {
+	afs := &appFlagSet{
 		prefix:  prefix,
 		flagSet: fs,
 	}
@@ -27,7 +27,7 @@ func newAppFlagSet(prefix string, name string, fs *pflag.FlagSet) *AppFlagSet {
 	return afs
 }
 
-func (afs *AppFlagSet) GetSampleEnvs() {
+func (afs *appFlagSet) GetSampleEnvs() {
 	afs.flagSet.VisitAll(func(f *pflag.Flag) {
 		if f.Name == "outenv" {
 			return
@@ -52,7 +52,7 @@ func (afs *AppFlagSet) GetSampleEnvs() {
 
 // ParseSet parses the given flagset. The specified prefix will be applied to
 // the environment variable names.
-func (afs *AppFlagSet) ParseSet() error {
+func (afs *appFlagSet) ParseSet() error {
 	var explicit []*pflag.Flag
 	var all []*pflag.Flag
 
@@ -81,7 +81,7 @@ func (afs *AppFlagSet) ParseSet() error {
 	return err
 }
 
-func (afs *AppFlagSet) Parse(args []string) {
+func (afs *appFlagSet) Parse(args []string) {
 	// Parse flags in command
 	err := afs.flagSet.Parse(args)
 	if err != nil {
@@ -140,7 +140,7 @@ func contains(list []*pflag.Flag, f *pflag.Flag) bool {
 	return false
 }
 
-func flagUsages(name string, afs *AppFlagSet) func() {
+func flagUsages(name string, afs *appFlagSet) func() {
 	return func() {
 		_, _ = fmt.Fprintf(os.Stderr, "Usage of %s:\n", name)
 

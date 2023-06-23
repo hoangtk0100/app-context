@@ -16,10 +16,10 @@ var (
 	defaultLevel = "info"
 	defaultType  = "stdout"
 
-	defaultLogger = newAppLogger(&Config{
-		BasePrefix:   "core",
-		DefaultLevel: "trace",
-		DefaultType:  defaultType,
+	defaultLogger = newAppLogger(&loggerConfig{
+		basePrefix:   "core",
+		defaultLevel: "trace",
+		defaultType:  defaultType,
 	})
 )
 
@@ -32,43 +32,43 @@ func GlobalLogger() AppLogger {
 }
 
 type appLogger struct {
-	config   Config
+	config   loggerConfig
 	logger   *zerolog.Logger
 	logLevel string
 	logType  string
 	logPath  string
 }
 
-type Config struct {
-	BasePrefix   string
-	DefaultLevel string
-	DefaultType  string
-	DefaultPath  string
+type loggerConfig struct {
+	basePrefix   string
+	defaultLevel string
+	defaultType  string
+	defaultPath  string
 }
 
-func newAppLogger(config *Config) *appLogger {
+func newAppLogger(config *loggerConfig) *appLogger {
 	if config == nil {
-		config = &Config{}
+		config = &loggerConfig{}
 	}
 
-	if config.DefaultLevel == "" {
-		config.DefaultLevel = defaultLevel
+	if config.defaultLevel == "" {
+		config.defaultLevel = defaultLevel
 	}
 
-	if config.DefaultType == "" {
-		config.DefaultType = defaultType
+	if config.defaultType == "" {
+		config.defaultType = defaultType
 	}
 
-	level := parseLogLevel(config.DefaultLevel)
+	level := parseLogLevel(config.defaultLevel)
 	zerolog.SetGlobalLevel(level)
 
-	logger := getNewLogger(config.DefaultType, config.DefaultPath)
+	logger := getNewLogger(config.defaultType, config.defaultPath)
 	return &appLogger{
 		config:   *config,
 		logger:   logger,
-		logLevel: config.DefaultLevel,
-		logType:  config.DefaultType,
-		logPath:  config.DefaultPath,
+		logLevel: config.defaultLevel,
+		logType:  config.defaultType,
+		logPath:  config.defaultPath,
 	}
 }
 
@@ -114,9 +114,9 @@ func (l *appLogger) GetLogger(prefix string) Logger {
 	if prefix == "" {
 		log = l.logger
 	} else {
-		prefix = fmt.Sprintf("%s.%s", l.config.BasePrefix, prefix)
-		logger := l.logger.With().Str("prefix", prefix).Logger()
-		log = &logger
+		prefix = fmt.Sprintf("%s.%s", l.config.basePrefix, prefix)
+		lg := l.logger.With().Str("prefix", prefix).Logger()
+		log = &lg
 	}
 
 	return &logger{
@@ -129,9 +129,26 @@ func (l *appLogger) ID() string {
 }
 
 func (l *appLogger) InitFlags() {
-	pflag.StringVar(&l.logLevel, "log-level", l.config.DefaultLevel, "Log level: panic | fatal | error | warn | info | debug | trace")
-	pflag.StringVar(&l.logType, "log-type", l.config.DefaultType, "Log type: stdout | stderr | file")
-	pflag.StringVar(&l.logPath, "log-path", l.config.DefaultPath, "Log path (require if log type is file), Ex: ./")
+	pflag.StringVar(
+		&l.logLevel,
+		"log-level",
+		l.config.defaultLevel,
+		"Log level (panic | fatal | error | warn | info | debug | trace) - Default: trace",
+	)
+
+	pflag.StringVar(
+		&l.logType,
+		"log-type",
+		l.config.defaultType,
+		"Log type (stdout | stderr | file) - Default: stdout",
+	)
+
+	pflag.StringVar(
+		&l.logPath,
+		"log-path",
+		l.config.defaultPath,
+		"Log path (require if log type is file) - Ex: \"./app.log\"",
+	)
 }
 
 func (l *appLogger) Run(_ AppContext) error {

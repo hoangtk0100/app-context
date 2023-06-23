@@ -13,14 +13,14 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-type GormDBDriver int
+type gormDBDriver int
 
 const (
-	GormDBDriverNotSupported GormDBDriver = iota
-	GormDBDriverMySQL
-	GormDBDriverPostgres
-	GormDBDriverSQLite
-	GormDBDriverMSSQL
+	gormDBDriverNotSupported gormDBDriver = iota
+	gormDBDriverMySQL
+	gormDBDriverPostgres
+	gormDBDriverSQLite
+	gormDBDriverMSSQL
 )
 
 type gormOpt struct {
@@ -106,7 +106,7 @@ func (gdb *gormDB) Run(ac appctx.AppContext) error {
 	gdb.logger = ac.Logger(gdb.id)
 
 	dbDriver := getDBDriver(gdb.dbDriver)
-	if dbDriver == GormDBDriverNotSupported {
+	if dbDriver == gormDBDriverNotSupported {
 		return errors.New("database driver not supported")
 	}
 
@@ -147,30 +147,30 @@ func (gdb *gormDB) GetDB() *gorm.DB {
 	return newSession
 }
 
-func getDBDriver(driver string) GormDBDriver {
+func getDBDriver(driver string) gormDBDriver {
 	switch strings.ToLower(driver) {
 	case "mysql":
-		return GormDBDriverMySQL
+		return gormDBDriverMySQL
 	case "postgres":
-		return GormDBDriverPostgres
+		return gormDBDriverPostgres
 	case "sqlite":
-		return GormDBDriverSQLite
+		return gormDBDriverSQLite
 	case "mssql":
-		return GormDBDriverMSSQL
+		return gormDBDriverMSSQL
 	}
 
-	return GormDBDriverNotSupported
+	return gormDBDriverNotSupported
 }
 
-func (gdb *gormDB) getDBConn(driver GormDBDriver) (dbConn *gorm.DB, err error) {
+func (gdb *gormDB) getDBConn(driver gormDBDriver) (dbConn *gorm.DB, err error) {
 	switch driver {
-	case GormDBDriverMySQL:
+	case gormDBDriverMySQL:
 		return dialects.MySqlDB(gdb.source)
-	case GormDBDriverPostgres:
+	case gormDBDriverPostgres:
 		return dialects.PostgresDB(gdb.source)
-	case GormDBDriverSQLite:
+	case gormDBDriverSQLite:
 		return dialects.SQLiteDB(gdb.source)
-	case GormDBDriverMSSQL:
+	case gormDBDriverMSSQL:
 		return dialects.MSSqlDB(gdb.source)
 	}
 
