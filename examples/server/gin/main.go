@@ -1,11 +1,11 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	appctx "github.com/hoangtk0100/app-context"
 	ginserver "github.com/hoangtk0100/app-context/component/server/gin"
+	"github.com/hoangtk0100/app-context/component/server/gin/middleware"
+	"github.com/hoangtk0100/app-context/core"
 )
 
 func main() {
@@ -25,7 +25,9 @@ func main() {
 	server := appCtx.MustGet(cmpId).(ginserver.GinServer)
 
 	router := server.GetRouter()
+	router.Use(middleware.Recovery(appCtx))
 	router.GET("/ping", demoHandler(appCtx))
+	router.GET("/error", demoErrorHandler(appCtx))
 
 	server.Start()
 }
@@ -35,6 +37,12 @@ func demoHandler(appCtx appctx.AppContext) gin.HandlerFunc {
 		logger := appCtx.Logger("demo")
 		logger.Info("I am Iron Man")
 
-		ctx.JSON(http.StatusOK, gin.H{"data": "pong"})
+		core.SuccessResponse(ctx, core.NewDataResponse("pong"))
+	}
+}
+
+func demoErrorHandler(appCtx appctx.AppContext) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		core.ErrorResponse(ctx, core.ErrBadRequest)
 	}
 }
