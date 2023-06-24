@@ -1,22 +1,15 @@
 package ginserver
 
 import (
-	"flag"
-
 	"github.com/gin-gonic/gin"
 	appctx "github.com/hoangtk0100/app-context"
+	"github.com/spf13/pflag"
 )
 
 const (
 	defaultServerAddress = ":3000"
 	defaultMode          = "debug"
 )
-
-type GinServer interface {
-	GetAddress() string
-	GetRouter() *gin.Engine
-	Start()
-}
 
 type config struct {
 	address string
@@ -43,14 +36,14 @@ func (gs *ginServer) ID() string {
 }
 
 func (gs *ginServer) InitFlags() {
-	flag.StringVar(
+	pflag.StringVar(
 		&gs.address,
 		"gin-address",
 		defaultServerAddress,
 		"Gin server address - Default: 3000",
 	)
 
-	flag.StringVar(
+	pflag.StringVar(
 		&gs.mode,
 		"gin-mode",
 		defaultMode,

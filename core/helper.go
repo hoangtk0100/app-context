@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/hoangtk0100/app-context/component/pubsub"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
@@ -31,4 +33,15 @@ type EmailComponent interface {
 		bcc []string,
 		attachments []string,
 	) error
+}
+
+type GinComponent interface {
+	GetAddress() string
+	GetRouter() *gin.Engine
+	Start()
+}
+
+type PubSubComponent interface {
+	Publish(ctx context.Context, topic pubsub.Topic, msg *pubsub.Message) error
+	Subscribe(ctx context.Context, topic pubsub.Topic) (ch <-chan *pubsub.Message, unsubscribeFunc func())
 }
