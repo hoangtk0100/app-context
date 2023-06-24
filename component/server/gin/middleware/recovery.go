@@ -5,11 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	appctx "github.com/hoangtk0100/app-context"
+	core "github.com/hoangtk0100/app-context/core"
 )
-
-type CanGetStatusCode interface {
-	StatusCode() int
-}
 
 func Recovery(appCtx appctx.AppContext) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -17,18 +14,17 @@ func Recovery(appCtx appctx.AppContext) gin.HandlerFunc {
 			if err := recover(); err != nil {
 				ctx.Header("Content-Type", "application/json")
 
-				if appErr, ok := err.(CanGetStatusCode); ok {
+				if appErr, ok := err.(core.StatusCodeCarrier); ok {
 					ctx.AbortWithStatusJSON(appErr.StatusCode(), appErr)
 				} else {
 					// General panic cases
-					ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-						"code":    http.StatusInternalServerError,
-						"status":  "internal server error",
-						"message": "something went wrong, please try again or contact supporters",
-					})
+					ctx.AbortWithStatusJSON(
+						http.StatusInternalServerError,
+						core.ErrInternalServerError,
+					)
 				}
 
-				appCtx.Logger("service").Errorf(err.(error), "%+v \n", err)
+				appCtx.Logger("service").Errorf(err.(error), "%+v\n", err)
 
 				if gin.IsDebugging() {
 					panic(err)
