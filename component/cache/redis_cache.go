@@ -6,7 +6,7 @@ import (
 
 	rdcache "github.com/go-redis/cache/v9"
 	appctx "github.com/hoangtk0100/app-context"
-	"github.com/hoangtk0100/app-context/common"
+	"github.com/hoangtk0100/app-context/core"
 )
 
 type redisCache struct {
@@ -14,7 +14,7 @@ type redisCache struct {
 }
 
 func NewRedisCache(redisDBComponentName string, appCtx appctx.AppContext) *redisCache {
-	redisDB := appCtx.MustGet(redisDBComponentName).(common.RedisDBComponent)
+	redisDB := appCtx.MustGet(redisDBComponentName).(core.RedisDBComponent)
 
 	c := rdcache.New(&rdcache.Options{
 		Redis:      redisDB.GetDB(),
