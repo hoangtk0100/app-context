@@ -22,7 +22,7 @@ func main() {
 		log.Error(err)
 	}
 
-	server := appCtx.MustGet(cmpId).(ginserver.GinServer)
+	server := appCtx.MustGet(cmpId).(core.GinComponent)
 
 	router := server.GetRouter()
 	router.Use(middleware.Recovery(appCtx))
