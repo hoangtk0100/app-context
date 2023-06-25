@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/hoangtk0100/app-context/component/pubsub"
+	"github.com/hoangtk0100/app-context/component/token"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
@@ -44,4 +45,9 @@ type GinComponent interface {
 type PubSubComponent interface {
 	Publish(ctx context.Context, topic pubsub.Topic, msg *pubsub.Message) error
 	Subscribe(ctx context.Context, topic pubsub.Topic) (ch <-chan *pubsub.Message, unsubscribeFunc func())
+}
+
+type TokenMakerComponent interface {
+	CreateToken(uid string, tokenType token.TokenType, duration ...time.Duration) (string, *token.Payload, error)
+	VerifyToken(token string) (*token.Payload, error)
 }
