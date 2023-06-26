@@ -90,7 +90,7 @@ func (storage *r2Storage) Stop() error {
 	return nil
 }
 
-func (storage *r2Storage) UploadFile(ctx context.Context, data []byte, key string, contentType string) (string, string, error) {
+func (storage *r2Storage) UploadFile(ctx context.Context, data []byte, key string, contentType string) (url string, storageName string, err error) {
 	fileBytes := bytes.NewReader(data)
 
 	params := &s3.PutObjectInput{
@@ -100,12 +100,12 @@ func (storage *r2Storage) UploadFile(ctx context.Context, data []byte, key strin
 		ContentType: aws.String(contentType),
 	}
 
-	_, err := storage.client.PutObject(ctx, params)
+	_, err = storage.client.PutObject(ctx, params)
 	if err != nil {
 		return "", "", errors.WithStack(err)
 	}
 
-	url := fmt.Sprintf("%s/%s", storage.domain, key)
+	url = fmt.Sprintf("%s/%s", storage.domain, key)
 	return url, storage.name, nil
 }
 

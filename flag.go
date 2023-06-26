@@ -33,20 +33,21 @@ func (afs *appFlagSet) GetSampleEnvs() {
 			return
 		}
 
-		s := fmt.Sprintf("## %s (--%s)\n", f.Usage, f.Name)
-		s += fmt.Sprintf("#%s=", getEnvName(afs.prefix, f.Name))
+		var sb strings.Builder
+		sb.WriteString(fmt.Sprintf("## %s (--%s)\n", f.Usage, f.Name))
+		sb.WriteString(fmt.Sprintf("#%s=", getEnvName(afs.prefix, f.Name)))
 
 		if !isZeroValue(f, f.DefValue) {
 			t := fmt.Sprintf("%T", f.Value)
 			if t == "*pflag.stringValue" {
 				// put quotes on the value
-				s += fmt.Sprintf("%q", f.DefValue)
+				sb.WriteString(fmt.Sprintf("%q", f.DefValue))
 			} else {
-				s += fmt.Sprintf("%v", f.DefValue)
+				sb.WriteString(fmt.Sprintf("%v", f.DefValue))
 			}
 		}
 
-		fmt.Print(s, "\n\n")
+		fmt.Print(sb.String(), "\n\n")
 	})
 }
 
@@ -124,7 +125,7 @@ func getEnvName(prefix, name string) string {
 	name = strings.Replace(name, "-", "_", -1)
 
 	if prefix != "" {
-		name = prefix + name
+		name = fmt.Sprintf("%s_%s", prefix, name)
 	}
 
 	return strings.ToUpper(name)
@@ -145,31 +146,33 @@ func flagUsages(name string, afs *appFlagSet) func() {
 		_, _ = fmt.Fprintf(os.Stderr, "Usage of %s:\n", name)
 
 		afs.flagSet.VisitAll(func(f *pflag.Flag) {
-			s := fmt.Sprintf("  --%s", f.Name)
+			var sb strings.Builder
+
+			sb.WriteString(fmt.Sprintf("  --%s", f.Name))
 			name, usage := pflag.UnquoteUsage(f)
 			if len(name) > 0 {
-				s += " " + name
+				sb.WriteString(" " + name)
 			}
 
-			if len(s) <= 4 {
-				s += "\t"
+			if sb.Len() <= 4 {
+				sb.WriteString("\t")
 			} else {
-				s += "\n    \t"
+				sb.WriteString("\n    \t")
 			}
 
-			s += usage
+			sb.WriteString(usage)
 
 			if !isZeroValue(f, f.DefValue) {
 				t := fmt.Sprintf("%T", f.Value)
 				if t == "*pflag.stringValue" {
-					s += fmt.Sprintf(" (default %q)", f.DefValue)
+					sb.WriteString(fmt.Sprintf(" (default %q)", f.DefValue))
 				} else {
-					s += fmt.Sprintf(" (default %v)", f.DefValue)
+					sb.WriteString(fmt.Sprintf(" (default %v)", f.DefValue))
 				}
 			}
 
-			s += fmt.Sprintf(" [$%s]", getEnvName(afs.prefix, f.Name))
-			_, _ = fmt.Fprint(os.Stderr, s, "\n")
+			sb.WriteString(fmt.Sprintf(" [$%s]", getEnvName(afs.prefix, f.Name)))
+			_, _ = fmt.Fprint(os.Stderr, sb.String(), "\n")
 		})
 	}
 }

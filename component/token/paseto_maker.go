@@ -78,7 +78,7 @@ func (maker *pasetoMaker) Stop() error {
 	return nil
 }
 
-func (maker *pasetoMaker) CreateToken(uid string, tokenType TokenType, duration ...time.Duration) (string, *Payload, error) {
+func (maker *pasetoMaker) CreateToken(tokenType TokenType, uid string, duration ...time.Duration) (string, *Payload, error) {
 	tokenDuration, err := maker.tokenOpt.getTokenDuration(tokenType, duration...)
 	if err != nil {
 		return "", nil, err
