@@ -24,7 +24,7 @@ func main() {
 
 	maker := appCtx.MustGet(cmpId).(core.TokenMakerComponent)
 
-	customToken, customPayload, err := maker.CreateToken("some-uid", token.CustomToken, time.Minute)
+	customToken, customPayload, err := maker.CreateToken(token.CustomToken, "some-uid", time.Minute)
 	if err != nil {
 		log.Fatal(err)
 	}

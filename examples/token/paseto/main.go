@@ -22,7 +22,7 @@ func main() {
 
 	maker := appCtx.MustGet(cmpId).(core.TokenMakerComponent)
 
-	accessToken, accessPayload, err := maker.CreateToken("some-uid", token.AccessToken)
+	accessToken, accessPayload, err := maker.CreateToken(token.AccessToken, "some-uid")
 	if err != nil {
 		log.Fatal(err)
 	}
