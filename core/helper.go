@@ -48,12 +48,12 @@ type PubSubComponent interface {
 }
 
 type TokenMakerComponent interface {
-	CreateToken(uid string, tokenType token.TokenType, duration ...time.Duration) (string, *token.Payload, error)
+	CreateToken(tokenType token.TokenType, uid string, duration ...time.Duration) (string, *token.Payload, error)
 	VerifyToken(token string) (*token.Payload, error)
 }
 
 type StorageComponent interface {
-	UploadFile(ctx context.Context, data []byte, key string, contentType string) (string, string, error)
+	UploadFile(ctx context.Context, data []byte, key string, contentType string) (url string, storageName string, err error)
 	GetPresignedURL(ctx context.Context, key string, expiration time.Duration) (string, error)
 	GetPresignedURLs(ctx context.Context, keys []string, expiration time.Duration) (map[string]string, error)
 	DeleteFiles(ctx context.Context, keys []string) error
