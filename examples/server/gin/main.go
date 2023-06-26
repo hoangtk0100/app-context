@@ -11,7 +11,6 @@ import (
 func main() {
 	const cmpId = "gin"
 	appCtx := appctx.NewAppContext(
-		appctx.WithPrefix("gin"),
 		appctx.WithName("Demo Gin"),
 		appctx.WithComponent(ginserver.NewGinServer(cmpId)),
 	)
@@ -19,7 +18,7 @@ func main() {
 	log := appCtx.Logger("service")
 
 	if err := appCtx.Load(); err != nil {
-		log.Error(err)
+		log.Fatal(err)
 	}
 
 	server := appCtx.MustGet(cmpId).(core.GinComponent)

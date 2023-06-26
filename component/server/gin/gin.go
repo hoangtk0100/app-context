@@ -1,6 +1,8 @@
 package ginserver
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	appctx "github.com/hoangtk0100/app-context"
 	"github.com/spf13/pflag"
@@ -40,7 +42,7 @@ func (gs *ginServer) InitFlags() {
 		&gs.address,
 		"gin-address",
 		defaultServerAddress,
-		"Gin server address - Default: 3000",
+		fmt.Sprintf("Gin server address - Default: %s", defaultServerAddress),
 	)
 
 	pflag.StringVar(

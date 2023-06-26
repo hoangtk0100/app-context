@@ -97,7 +97,7 @@ func (opt *tokenOpt) getTokenDuration(tokenType TokenType, duration ...time.Dura
 	return tokenDuration, nil
 }
 
-func (maker *jwtMaker) CreateToken(uid string, tokenType TokenType, duration ...time.Duration) (string, *Payload, error) {
+func (maker *jwtMaker) CreateToken(tokenType TokenType, uid string, duration ...time.Duration) (string, *Payload, error) {
 	tokenDuration, err := maker.tokenOpt.getTokenDuration(tokenType, duration...)
 	if err != nil {
 		return "", nil, err
