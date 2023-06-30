@@ -1,13 +1,14 @@
 package appctx
 
 import (
-	"errors"
 	"fmt"
-	glog "log"
+	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/rs/zerolog/pkgerrors"
 	"github.com/spf13/pflag"
 )
@@ -62,7 +63,7 @@ func newAppLogger(config *loggerConfig) *appLogger {
 	level := parseLogLevel(config.defaultLevel)
 	zerolog.SetGlobalLevel(level)
 
-	logger := getNewLogger(config.defaultType, config.defaultPath)
+	logger := getNewLogger(prdEnv, config.defaultType, config.defaultPath)
 	return &appLogger{
 		config:   *config,
 		logger:   logger,
@@ -75,13 +76,35 @@ func newAppLogger(config *loggerConfig) *appLogger {
 func parseLogLevel(input string) zerolog.Level {
 	level, err := zerolog.ParseLevel(input)
 	if err != nil {
-		glog.Fatal("Error parsing log level")
+		log.Fatal().Err(err).Msg("Error parsing log level")
 	}
 
 	return level
 }
 
-func getNewLogger(logType, logPath string) *zerolog.Logger {
+func getOutputFormat(env string, writer *os.File) io.Writer {
+	if prdEnv == env {
+		return writer
+	}
+
+	output := zerolog.ConsoleWriter{Out: writer, TimeFormat: time.RFC3339}
+	output.FormatLevel = func(i interface{}) string {
+		return strings.ToUpper(fmt.Sprintf("| %-6s|", i))
+	}
+	output.FormatMessage = func(i interface{}) string {
+		return fmt.Sprintf("*** %s ***", i)
+	}
+	output.FormatFieldName = func(i interface{}) string {
+		return fmt.Sprintf("%-6s:", i)
+	}
+	output.FormatFieldValue = func(i interface{}) string {
+		return fmt.Sprintf("%s", i)
+	}
+
+	return output
+}
+
+func getNewLogger(env, logType, logPath string) *zerolog.Logger {
 	var writer *os.File
 
 	switch logType {
@@ -90,20 +113,21 @@ func getNewLogger(logType, logPath string) *zerolog.Logger {
 
 	case "file":
 		if logPath == "" {
-			glog.Fatal(errors.New("empty log path"))
+			log.Fatal().Msg("Empty log path")
 		}
 
 		var err error
 		writer, err = os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			glog.Fatal(err)
+			log.Fatal().Err(err).Msg("Cannot write to log file")
 		}
 
 	default:
 		writer = os.Stdout
 	}
 
-	logger := zerolog.New(writer).With().Timestamp().Logger()
+	output := getOutputFormat(env, writer)
+	logger := zerolog.New(output).With().Timestamp().Logger()
 	return &logger
 }
 
@@ -151,7 +175,7 @@ func (l *appLogger) InitFlags() {
 	)
 }
 
-func (l *appLogger) Run(_ AppContext) error {
+func (l *appLogger) Run(ac AppContext) error {
 	level := parseLogLevel(l.logLevel)
 	zerolog.SetGlobalLevel(level)
 
@@ -159,7 +183,7 @@ func (l *appLogger) Run(_ AppContext) error {
 		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	}
 
-	l.logger = getNewLogger(l.logType, l.logPath)
+	l.logger = getNewLogger(ac.GetEnvName(), l.logType, l.logPath)
 	return nil
 }
 

@@ -2,10 +2,10 @@ package appctx
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -97,12 +97,12 @@ func (ac *appContext) parseFlags() {
 	// Parse all flags have been defined
 	err := ac.cmd.flagSet.Parse(viper.AllKeys())
 	if err != nil {
-		log.Fatalln("Cannot parse command flags")
+		log.Fatal().Msg("Cannot parse command flags")
 	}
 
 	// Bind the command flags to the configuration variables
 	if err := viper.BindPFlags(ac.cmd.flagSet); err != nil {
-		log.Fatalln("Error binding flags : ", err.Error())
+		log.Fatal().Err(err).Msg("Error binding flags")
 	}
 
 	envFile := os.Getenv(envFileKey)
@@ -119,15 +119,15 @@ func (ac *appContext) parseFlags() {
 		viper.AutomaticEnv()
 
 		if err := viper.ReadInConfig(); err != nil {
-			log.Fatalf("Load env(%s) failed : %s", envFile, err.Error())
+			log.Fatal().Err(err).Msgf("Load env(%s) failed", envFile)
 		}
 	} else if envFile != defaultEnvFile {
-		log.Fatalf("Load env(%s) failed : %s", envFile, err.Error())
+		log.Fatal().Err(err).Msgf("Load env(%s) failed", envFile)
 	}
 
 	// Set ENV variables to flags value if not passing flags in command
 	if err := ac.cmd.ParseSet(); err != nil {
-		log.Fatalln("Cannot set flags")
+		log.Fatal().Msg("Cannot set flags")
 	}
 }
 

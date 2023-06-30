@@ -2,11 +2,11 @@ package appctx
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"reflect"
 	"strings"
 
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -86,12 +86,12 @@ func (afs *appFlagSet) Parse(args []string) {
 	// Parse flags in command
 	err := afs.flagSet.Parse(args)
 	if err != nil {
-		log.Fatalln("Cannot parse command flags")
+		log.Fatal().Msg("Cannot parse command flags")
 	}
 
 	// Set ENV variables to flags value if not passing flags in command
 	if err := afs.ParseSet(); err != nil {
-		log.Fatalln("Cannot set flags")
+		log.Fatal().Msg("Cannot set flags")
 	}
 }
 
