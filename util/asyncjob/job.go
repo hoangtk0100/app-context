@@ -2,8 +2,9 @@ package asyncjob
 
 import (
 	"context"
-	"log"
 	"time"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Job interface {
@@ -38,22 +39,22 @@ const (
 type JobHandler func(ctx context.Context) error
 
 type jobConfig struct {
-	Name           string
-	MaxTimeout     time.Duration
-	RetryDurations []time.Duration
+	name           string
+	maxTimeout     time.Duration
+	retryDurations []time.Duration
 }
 
 type OptionHandler func(*jobConfig)
 
 func WithName(name string) OptionHandler {
 	return func(jc *jobConfig) {
-		jc.Name = name
+		jc.name = name
 	}
 }
 
 func WithRetryDurations(times []time.Duration) OptionHandler {
 	return func(jc *jobConfig) {
-		jc.RetryDurations = times
+		jc.retryDurations = times
 	}
 }
 
@@ -69,8 +70,8 @@ type job struct {
 func NewJob(handler JobHandler, options ...OptionHandler) *job {
 	newJob := job{
 		config: jobConfig{
-			MaxTimeout:     defaultMaxTimeout,
-			RetryDurations: defaultRetryTimes,
+			maxTimeout:     defaultMaxTimeout,
+			retryDurations: defaultRetryTimes,
 		},
 		handler:    handler,
 		retryIndex: -1,
@@ -87,11 +88,11 @@ func NewJob(handler JobHandler, options ...OptionHandler) *job {
 }
 
 func (j *job) Name() string {
-	return j.config.Name
+	return j.config.name
 }
 
 func (j *job) Execute(ctx context.Context) error {
-	log.Println("Execute", j.config.Name)
+	log.Info().Msgf("Execute : %s", j.config.name)
 	j.state = StateRunning
 
 	if err := j.handler(ctx); err != nil {
@@ -106,12 +107,12 @@ func (j *job) Execute(ctx context.Context) error {
 }
 
 func (j *job) Retry(ctx context.Context) error {
-	if j.retryIndex == len(j.config.RetryDurations)-1 {
+	if j.retryIndex == len(j.config.retryDurations)-1 {
 		return nil
 	}
 
 	j.retryIndex++
-	time.Sleep(j.config.RetryDurations[j.retryIndex])
+	time.Sleep(j.config.retryDurations[j.retryIndex])
 
 	err := j.Execute(ctx)
 	if err == nil {
@@ -119,7 +120,7 @@ func (j *job) Retry(ctx context.Context) error {
 		return nil
 	}
 
-	if j.retryIndex == len(j.config.RetryDurations)-1 {
+	if j.retryIndex == len(j.config.retryDurations)-1 {
 		j.state = StateRetryFailed
 		j.lastErr = err
 		return err
@@ -142,7 +143,7 @@ func (j *job) SetRetryDurations(times []time.Duration) {
 		return
 	}
 
-	j.config.RetryDurations = times
+	j.config.retryDurations = times
 }
 
 func (j *job) LastError() error {
