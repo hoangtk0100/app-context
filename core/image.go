@@ -9,18 +9,19 @@ import (
 )
 
 type Image struct {
-	Id       int    `json:"id" gorm:"column:id;" db:"id"`
-	FileName string `json:"file_name" gorm:"column:file_name;" db:"file_name"`
-	FilePath string `json:"file_path" gorm:"column:file_path;" db:"file_path"`
+	ID       int    `json:"id" gorm:"column:id;" db:"id"`
+	Name     string `json:"name" gorm:"column:name;" db:"name"`
+	Path     string `json:"path" gorm:"column:path;" db:"path"`
+	URL      string `json:"url" gorm:"-" db:"-"`
 	Width    int    `json:"width" gorm:"column:width;" db:"width"`
 	Height   int    `json:"height" gorm:"column:height;" db:"height"`
 	Provider string `json:"provider,omitempty" gorm:"column:provider;" db:"provider"`
 }
 
-func (*Image) TableName() string { return "images" }
+func (Image) TableName() string { return "images" }
 
 func (img *Image) Fulfill(domain string) {
-	img.FileName = fmt.Sprintf("%s/%s", domain, img.FilePath)
+	img.URL = fmt.Sprintf("%s/%s", domain, img.Path)
 }
 
 func (img *Image) Scan(value interface{}) error {

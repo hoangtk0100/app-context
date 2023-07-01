@@ -13,7 +13,7 @@ func (SimpleUser) TableName() string {
 
 func NewSimpleUser(id int, firstName, lastName string, avatar *Image) SimpleUser {
 	return SimpleUser{
-		SQLModel:  SQLModel{Id: id},
+		SQLModel:  SQLModel{ID: id},
 		LastName:  lastName,
 		FirstName: firstName,
 		Avatar:    avatar,
