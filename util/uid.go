@@ -52,11 +52,11 @@ func (uid *UID) String() string {
 	return base58.Encode([]byte(fmt.Sprintf("%v", val)))
 }
 
-func (uid *UID) Marshal() ([]byte, error) {
+func (uid *UID) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("\"%s\"", uid.String())), nil
 }
 
-func (uid *UID) Unmarshal(data []byte) error {
+func (uid *UID) UnmarshalJSON(data []byte) error {
 	decodeUID, err := UIDFromString(strings.Replace(string(data), "\"", "", -1))
 	if err != nil {
 		return err
