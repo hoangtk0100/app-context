@@ -17,7 +17,7 @@ type GroupSubJob interface {
 	Run(ctx context.Context) error
 }
 
-type subscribeEngine struct {
+type subscriberEngine struct {
 	name   string
 	jobs   []topicJobs
 	ps     PubSubComponent
@@ -25,8 +25,8 @@ type subscribeEngine struct {
 	logger appctx.Logger
 }
 
-func NewSubscribeEngine(name string, ps PubSubComponent, ac appctx.AppContext) *subscribeEngine {
-	return &subscribeEngine{
+func NewSubscriberEngine(name string, ps PubSubComponent, ac appctx.AppContext) *subscriberEngine {
+	return &subscriberEngine{
 		name: name,
 		ps:   ps,
 		ac:   ac,
@@ -39,7 +39,7 @@ type topicJobs struct {
 	jobs         []SubJob
 }
 
-func (engine *subscribeEngine) AddTopicJobs(topic pubsub.Topic, isConcurrent bool, jobs ...SubJob) {
+func (engine *subscriberEngine) AddTopicJobs(topic pubsub.Topic, isConcurrent bool, jobs ...SubJob) {
 	topicJobs := &topicJobs{
 		topic:        topic,
 		isConcurrent: isConcurrent,
@@ -49,7 +49,7 @@ func (engine *subscribeEngine) AddTopicJobs(topic pubsub.Topic, isConcurrent boo
 	engine.jobs = append(engine.jobs, *topicJobs)
 }
 
-func (engine *subscribeEngine) Start() error {
+func (engine *subscriberEngine) Start() error {
 	engine.logger = engine.ac.Logger(engine.name)
 	for _, jobIndex := range engine.jobs {
 		engine.startSubTopic(jobIndex.topic, jobIndex.isConcurrent, jobIndex.jobs...)
@@ -58,7 +58,7 @@ func (engine *subscribeEngine) Start() error {
 	return nil
 }
 
-func (engine *subscribeEngine) startSubTopic(topic pubsub.Topic, isConcurrent bool, jobs ...SubJob) error {
+func (engine *subscriberEngine) startSubTopic(topic pubsub.Topic, isConcurrent bool, jobs ...SubJob) error {
 	c, _ := engine.ps.Subscribe(context.Background(), topic)
 	for _, item := range jobs {
 		engine.logger.Info("Setup subscriber :", item.Name)
