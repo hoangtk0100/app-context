@@ -8,7 +8,7 @@ import (
 
 type SQLModel struct {
 	ID        int        `json:"-" gorm:"column:id;" db:"id"`
-	FakeID    *util.UID  `json:"id" gorm:"-"`
+	FakeID    *util.UID  `json:"id,omitempty" gorm:"-"`
 	CreatedAt *time.Time `json:"created_at,omitempty" gorm:"column:created_at;" db:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at,omitempty" gorm:"column:updated_at;" db:"updated_at"`
 }
