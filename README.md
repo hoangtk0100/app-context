@@ -16,6 +16,35 @@ It provides the following features:
 - Ability to output environment variables and flag variables in `.env` format.
 - Easy integration of additional components as plugins.
 
+## Components
+- Server
+	- gRPC
+	- Gin
+- Client
+	- gRPC
+- Pubsub
+	- NATS
+	- Local
+- Cache
+	- Redis
+	- Local
+- Storage
+	- AWS S3
+	- Cloudflare R2
+- Token
+	- PASETO
+	- JWT
+- Tracer
+	- Jaeger
+- Datastore
+	- GORM
+		- MSSQL
+		- MySQL
+		- PostgreSQL
+		- SQLite
+	- Redis
+- Mail
+
 ## Examples
 
 - [Demo component](./examples/component)
