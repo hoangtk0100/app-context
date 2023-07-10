@@ -12,7 +12,7 @@ func main() {
 	const cmpId = "gin"
 	appCtx := appctx.NewAppContext(
 		appctx.WithName("Demo Gin"),
-		appctx.WithComponent(ginserver.NewGinServer(cmpId)),
+		appctx.WithComponent(ginserver.NewServer(cmpId)),
 	)
 
 	log := appCtx.Logger("service")

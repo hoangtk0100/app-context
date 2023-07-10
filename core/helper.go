@@ -2,12 +2,16 @@ package core
 
 import (
 	"context"
+	"net"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	appctx "github.com/hoangtk0100/app-context"
 	"github.com/hoangtk0100/app-context/component/pubsub"
 	"github.com/hoangtk0100/app-context/component/token"
 	"github.com/redis/go-redis/v9"
+	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
 
@@ -57,4 +61,26 @@ type StorageComponent interface {
 	GetPresignedURL(ctx context.Context, key string, expiration time.Duration) (string, error)
 	GetPresignedURLs(ctx context.Context, keys []string, expiration time.Duration) (map[string]string, error)
 	DeleteFiles(ctx context.Context, keys []string) error
+}
+
+type GRPCServerComponent interface {
+	WithAddress(address string)
+	WithListener(lis net.Listener)
+	WithServerOptions(serverOpts ...grpc.ServerOption)
+	WithServeMuxOptions(muxOpts ...runtime.ServeMuxOption)
+	WithUnaryInterceptors(interceptors ...grpc.UnaryServerInterceptor)
+	WithStreamInterceptors(interceptors ...grpc.StreamServerInterceptor)
+	GetLogger() appctx.Logger
+	GetServer() *grpc.Server
+	GetGateway() *runtime.ServeMux
+	Start(ctx context.Context)
+}
+
+type GRPCClientComponent interface {
+	WithPrefix(prefix string)
+	WithAddress(address string)
+	GetAddress() string
+	GetLogger() appctx.Logger
+	Dial(options ...grpc.DialOption) *grpc.ClientConn
+	DialContext(ctx context.Context, options ...grpc.DialOption) *grpc.ClientConn
 }

@@ -16,7 +16,7 @@ func main() {
 	appCtx := appctx.NewAppContext(
 		appctx.WithName("Demo Jaeger"),
 		appctx.WithComponent(tracer.NewJaeger(jaegerId)),
-		appctx.WithComponent(ginserver.NewGinServer(ginId)),
+		appctx.WithComponent(ginserver.NewServer(ginId)),
 	)
 
 	log := appCtx.Logger("service")

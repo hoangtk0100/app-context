@@ -26,7 +26,7 @@ type ginServer struct {
 	*config
 }
 
-func NewGinServer(id string) *ginServer {
+func NewServer(id string) *ginServer {
 	return &ginServer{
 		id:     id,
 		config: new(config),
