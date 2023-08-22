@@ -43,7 +43,7 @@ func (es *emailSender) InitFlags() {
 	pflag.StringVar(&es.name,
 		"email-sender-name",
 		"",
-		"Email sender name - Ex: redis:<user>:<password>@<host>:<port>/<db_name>",
+		"Email sender name",
 	)
 
 	pflag.StringVar(&es.address,
