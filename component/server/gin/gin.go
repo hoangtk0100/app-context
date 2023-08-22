@@ -1,7 +1,13 @@
 package ginserver
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	appctx "github.com/hoangtk0100/app-context"
@@ -85,4 +91,32 @@ func (gs *ginServer) Start() {
 	if err := gs.router.Run(gs.address); err != nil {
 		gs.logger.Fatal(err, "Cannot start server")
 	}
+}
+
+func (gs *ginServer) StartGracefully() {
+	srv := &http.Server{
+		Addr:    gs.address,
+		Handler: gs.router,
+	}
+
+	go func() {
+		gs.logger.Info("Server running at:", gs.address)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			gs.logger.Fatal(err, "Server closed unexpectedly")
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	gs.logger.Print("Shutting down server")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		gs.logger.Fatal(err, "Server forced to shutdown")
+	}
+
+	gs.logger.Print("Server exited")
 }
