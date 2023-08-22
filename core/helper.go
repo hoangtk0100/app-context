@@ -44,6 +44,7 @@ type GinComponent interface {
 	GetAddress() string
 	GetRouter() *gin.Engine
 	Start()
+	StartGracefully()
 }
 
 type PubSubComponent interface {
