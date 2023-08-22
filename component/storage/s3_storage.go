@@ -61,13 +61,13 @@ func (storage *s3Storage) Run(ac appctx.AppContext) error {
 	)
 
 	if err != nil {
-		storage.logger.Fatal(err, "Cannot setup storage storage")
+		storage.logger.Fatal(err, ErrCannotSetupStorage.Error())
 	}
 
 	storage.client = s3.NewFromConfig(cfg)
 	storage.presignClient = s3.NewPresignClient(storage.client)
 
-	storage.logger.Info("Setup storage storage : ", storage.id)
+	storage.logger.Info("Setup storage: ", storage.id)
 	return nil
 }
 

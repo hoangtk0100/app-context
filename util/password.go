@@ -47,7 +47,7 @@ func HashPassword(format string, args ...interface{}) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func CheckPassword(hashedPassword string, format string, args ...interface{}) error {
+func CheckPassword(format string, hashedPassword string, args ...interface{}) error {
 	password, err := getFormattedPassword(format, args...)
 	if err != nil {
 		return errors.WithStack(err)

@@ -17,7 +17,7 @@ func TestPassword(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, hashedPassword1)
 
-	err = CheckPassword(hashedPassword1, "", password)
+	err = CheckPassword("", hashedPassword1, password)
 	fmt.Println(password)
 	fmt.Println(hashedPassword1)
 	require.NoError(t, err)
@@ -26,7 +26,7 @@ func TestPassword(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, wrongPassword)
 
-	err = CheckPassword(hashedPassword1, "", wrongPassword)
+	err = CheckPassword("", hashedPassword1, wrongPassword)
 	require.EqualError(t, err, bcrypt.ErrMismatchedHashAndPassword.Error())
 
 	hashedPassword2, err := HashPassword("", password)
@@ -41,11 +41,11 @@ func TestPassword(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, salt)
 
-	hashedPassword3, err := HashPassword("%v.%v", salt, password)
+	hashedPassword3, err := HashPassword("%v.%v", password, salt)
 	require.NoError(t, err)
 	require.NotEmpty(t, hashedPassword3)
 	fmt.Println(hashedPassword3)
 
-	err = CheckPassword(hashedPassword3, "", salt, password)
+	err = CheckPassword("", hashedPassword3, password, salt)
 	require.NoError(t, err)
 }
