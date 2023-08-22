@@ -113,7 +113,6 @@ func (ac *appContext) parseFlags() {
 	_, err = os.Stat(envFile)
 	if err == nil {
 		viper.SetConfigFile(envFile)
-		viper.SetConfigType("dotenv")
 
 		// Automatically overrides values with the value of corresponding environment variable if they exist
 		viper.AutomaticEnv()
