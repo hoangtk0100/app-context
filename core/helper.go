@@ -85,3 +85,8 @@ type GRPCClientComponent interface {
 	Dial(options ...grpc.DialOption) *grpc.ClientConn
 	DialContext(ctx context.Context, options ...grpc.DialOption) *grpc.ClientConn
 }
+
+type DBMigrationComponent interface {
+	MigrateUp()
+	MigrateDown()
+}
