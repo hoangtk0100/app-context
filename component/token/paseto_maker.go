@@ -28,9 +28,10 @@ type tokenOpt struct {
 // PasetoMaker is a PASETO token maker
 // use symmetric encryption to encrypt the token payload
 type pasetoMaker struct {
-	id           string
-	paseto       *paseto.V2
-	symmetricKey []byte
+	id                string
+	paseto            *paseto.V2
+	symmetricKey      string
+	symmetricKeyBytes []byte
 	*tokenOpt
 }
 
@@ -47,9 +48,9 @@ func (maker *pasetoMaker) ID() string {
 }
 
 func (maker *pasetoMaker) InitFlags() {
-	pflag.BytesHexVar(&maker.symmetricKey,
+	pflag.StringVar(&maker.symmetricKey,
 		"paseto-symmetric-key",
-		[]byte(""),
+		"",
 		fmt.Sprintf("PASETO symmetric key - Key size: %d", pasetoSymmetricKeySize),
 	)
 
@@ -71,6 +72,7 @@ func (maker *pasetoMaker) Run(_ appctx.AppContext) error {
 		return errors.WithStack(ErrInvalidPasetoKeySize)
 	}
 
+	maker.symmetricKeyBytes = []byte(maker.symmetricKey)
 	return nil
 }
 
@@ -89,14 +91,14 @@ func (maker *pasetoMaker) CreateToken(tokenType TokenType, uid string, duration 
 		return "", payload, err
 	}
 
-	token, err := maker.paseto.Encrypt(maker.symmetricKey, payload, nil)
+	token, err := maker.paseto.Encrypt(maker.symmetricKeyBytes, payload, nil)
 	return token, payload, errors.WithStack(err)
 }
 
 func (maker *pasetoMaker) VerifyToken(token string) (*Payload, error) {
 	payload := &Payload{}
 
-	err := maker.paseto.Decrypt(token, maker.symmetricKey, payload, nil)
+	err := maker.paseto.Decrypt(token, maker.symmetricKeyBytes, payload, nil)
 	if err != nil {
 		return nil, errors.WithStack(ErrInvalidToken)
 	}
