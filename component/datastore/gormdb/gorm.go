@@ -59,17 +59,17 @@ func (gdb *gormDB) InitFlags() {
 	}
 
 	pflag.StringVar(
+		&gdb.dbDriver,
+		"db-driver",
+		"postgres",
+		"Database driver (postgres | mysql | sqlite | mssql) - Default: postgres",
+	)
+
+	pflag.StringVar(
 		&gdb.source,
 		fmt.Sprintf("%sdb-source", prefix),
 		"",
 		"Database connection string",
-	)
-
-	pflag.StringVar(
-		&gdb.dbDriver,
-		fmt.Sprintf("%sdb-driver", prefix),
-		"mysql",
-		"Database driver (mysql | postgres | sqlite | mssql) - Default: mysql",
 	)
 
 	pflag.IntVar(
