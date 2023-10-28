@@ -1,6 +1,10 @@
 package middleware
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 var (
 	defaultHeaders = map[string]string{
@@ -12,11 +16,11 @@ var (
 	}
 )
 
-func CORS(headers map[string]string) gin.HandlerFunc {
+func CORS(headers ...map[string]string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Override default headers
 		if len(headers) != 0 {
-			for key, value := range headers {
+			for key, value := range headers[0] {
 				defaultHeaders[key] = value
 			}
 		}
@@ -28,7 +32,7 @@ func CORS(headers map[string]string) gin.HandlerFunc {
 
 		// Handle preflight requests
 		if ctx.Request.Method == "OPTIONS" {
-			ctx.AbortWithStatus(204)
+			ctx.AbortWithStatus(http.StatusNoContent)
 			return
 		}
 
